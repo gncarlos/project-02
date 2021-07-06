@@ -1,86 +1,102 @@
-// import { TextField } from '@material-ui/core';
+import { Container, TextField, Typography, Radio, RadioGroup, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import { makeStyles } from '@material-ui/core';
+import Slider from '@material-ui/core/Slider';
 
-// const dateForm = () => {
-//     return (
-//         <form className={classes.container} noValidate>
-//             <TextField
-//                 id="datetime-local"
-//                 label="Test Date"
-//                 type="datetime-local"
-//                 className={classes.textField}
-//                 InputLabelProps={{
-//                 shrink: true,
-//                 }}
-//             />
-//         </form>
-//     )
-// };
+const useStyles = makeStyles({
 
-// const userInfoForm = () => {
-//     import React from 'react';
-// import TextField from '@material-ui/core/TextField';
-// import { makeStyles } from '@material-ui/core/styles';
+});
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     '& .MuiTextField-root': {
-//       margin: theme.spacing(1),
-//       width: 200,
-//     },
-//   },
-// }));
+const handleSubmit = (e) => {
+  e.preventDefault()
+}
 
-// export default function ValidationTextFields() {
-//   const classes = useStyles();
+const marks = [
+  {
+    value: 0,
+    label: '<25',
+  },
+  {
+    value: 20,
+    label: '25-29',
+  },
+  {
+    value: 37,
+    label: '30-34',
+  },
+  {
+    value: 100,
+    label: '35-39',
+  },
+];
 
-//   return (
-//     <form className={classes.root} noValidate autoComplete="off">
-//       <div>
+function valuetext(value) {
+  return `${value}°C`;
+}
+const UserInput = () => {
+  const classes = useStyles()
 
-//         <TextField
-//           error
-//           id="standard-error-helper-text"
-//           label="Error"
-//           defaultValue="Hello World"
-//           helperText="Incorrect entry."
-//         />
-//       </div>
-//       <div>
-//         <TextField
-//           error
-//           id="filled-error"
-//           label="Error"
-//           defaultValue="Hello World"
-//           variant="filled"
-//         />
-//         <TextField
-//           error
-//           id="filled-error-helper-text"
-//           label="Error"
-//           defaultValue="Hello World"
-//           helperText="Incorrect entry."
-//           variant="filled"
-//         />
-//       </div>
-//       <div>
-//         <TextField
-//           error
-//           id="outlined-error"
-//           label="Error"
-//           defaultValue="Hello World"
-//           variant="outlined"
-//         />
-//         <TextField
-//           error
-//           id="outlined-error-helper-text"
-//           label="Error"
-//           defaultValue="Hello World"
-//           helperText="Incorrect entry."
-//           variant="outlined"
-//         />
-//       </div>
-//     </form>
-//   );
-// }
-// }
+  return(
+    
+    <div>
+      <Container >
+        <Typography
+          variant='h4'
+        >
+          Enter your information:
+        </Typography>
+       
+        <FormControl>
+          <TextField
+            label='Name'
+            fullWidth />
+          <br/>
+          {/* <div >
+            <Typography id="discrete-slider-custom" gutterBottom>
+              Age Group:
+            </Typography>
+            <Slider
+              defaultValue={20}
+              getAriaValueText={valuetext}
+              aria-labelledby="discrete-slider-custom"
+              step={10}
+              valueLabelDisplay="auto"
+              marks={marks}
+            />
+    </div> */}
+          {/* <br/> */}
+          <InputLabel id="label">Age</InputLabel>
+          <Select labelId="label" >
+            <MenuItem value={1}>Less than 25</MenuItem>
+            <MenuItem value={2}>25-29</MenuItem>
+            <MenuItem value={3}>30-34</MenuItem>
+            <MenuItem value={4}>35-39</MenuItem>
+            <MenuItem value={5}>40-44</MenuItem>
+            <MenuItem value={6}>45-49</MenuItem>
+            <MenuItem value={7}>50-54</MenuItem>
+            <MenuItem value={8}>55-59</MenuItem>
+            <MenuItem value={9}>60 or more</MenuItem>
+          </Select>
+          <br/>
+         
+          <RadioGroup>
+            <FormControlLabel value='male' control={<Radio/>} label='Male' />
+            <FormControlLabel value='female' control={<Radio/>} label='Female' />
+          </RadioGroup>
+          <br/>
+          <Button
+          type='submit'
+          variant='contained'
+          endIcon={<KeyboardArrowRightIcon />}
+          >
+            Submit
+          </Button>
+        </FormControl>
+      </Container>
 
+    </div>
+
+  )
+}
+
+export default UserInput;
