@@ -51,7 +51,7 @@ const UserInput = () => {
             label='Name'
             fullWidth />
           <br/>
-          <div >
+          {/* <div >
             <Typography id="discrete-slider-custom" gutterBottom>
               Age Group:
             </Typography>
@@ -63,9 +63,9 @@ const UserInput = () => {
               valueLabelDisplay="auto"
               marks={marks}
             />
-    </div>
-          <br/>
-          {/* <InputLabel id="label">Age</InputLabel>
+    </div> */}
+          {/* <br/> */}
+          <InputLabel id="label">Age</InputLabel>
           <Select labelId="label" >
             <MenuItem value={1}>Less than 25</MenuItem>
             <MenuItem value={2}>25-29</MenuItem>
@@ -76,7 +76,7 @@ const UserInput = () => {
             <MenuItem value={7}>50-54</MenuItem>
             <MenuItem value={8}>55-59</MenuItem>
             <MenuItem value={9}>60 or more</MenuItem>
-          </Select> */}
+          </Select>
           <br/>
          
           <RadioGroup>
