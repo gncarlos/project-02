@@ -1,102 +1,95 @@
-import { Container, TextField, Typography, Radio, RadioGroup, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
+import { TextField, Typography, Radio, RadioGroup, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
+import { FormControl, FormControlLabel, FormLabel, Grid } from '@material-ui/core';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { makeStyles } from '@material-ui/core';
-import Slider from '@material-ui/core/Slider';
+import {useState} from 'react'
+import {Link} from 'react-router-dom'
 
 const useStyles = makeStyles({
-
+  field: {
+    marginTop: 20,
+    marginBottom: 20,
+    display: "block"
+  }
 });
 
-const handleSubmit = (e) => {
-  e.preventDefault()
-}
+const UserInput = (props) => {
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [ageRange, setAgeRange] = useState("")
+  const [gender, setGender] = useState("")
 
-const marks = [
-  {
-    value: 0,
-    label: '<25',
-  },
-  {
-    value: 20,
-    label: '25-29',
-  },
-  {
-    value: 37,
-    label: '30-34',
-  },
-  {
-    value: 100,
-    label: '35-39',
-  },
-];
-
-function valuetext(value) {
-  return `${value}°C`;
-}
-const UserInput = () => {
   const classes = useStyles()
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    return (
+      props.history.push("/ScoreInput", { firstName: firstName, lastName: lastName, ageRange: ageRange, gender: gender })
+    )
+  }
+
   return(
-    
     <div>
-      <Container >
-        <Typography
-          variant='h4'
+      <Grid
+        container
+        justify="center"
+        alignItems='center'
+        direction='column'
         >
-          Enter your information:
-        </Typography>
-       
-        <FormControl>
-          <TextField
-            label='Name'
-            fullWidth />
-          <br/>
-          {/* <div >
-            <Typography id="discrete-slider-custom" gutterBottom>
-              Age Group:
+        <form onSubmit={handleSubmit}>
+          <Grid item>
+            <Typography variant='h4'>
+              Enter your information:
             </Typography>
-            <Slider
-              defaultValue={20}
-              getAriaValueText={valuetext}
-              aria-labelledby="discrete-slider-custom"
-              step={10}
-              valueLabelDisplay="auto"
-              marks={marks}
-            />
-    </div> */}
-          {/* <br/> */}
-          <InputLabel id="label">Age</InputLabel>
-          <Select labelId="label" >
-            <MenuItem value={1}>Less than 25</MenuItem>
-            <MenuItem value={2}>25-29</MenuItem>
-            <MenuItem value={3}>30-34</MenuItem>
-            <MenuItem value={4}>35-39</MenuItem>
-            <MenuItem value={5}>40-44</MenuItem>
-            <MenuItem value={6}>45-49</MenuItem>
-            <MenuItem value={7}>50-54</MenuItem>
-            <MenuItem value={8}>55-59</MenuItem>
-            <MenuItem value={9}>60 or more</MenuItem>
-          </Select>
-          <br/>
-         
-          <RadioGroup>
-            <FormControlLabel value='male' control={<Radio/>} label='Male' />
-            <FormControlLabel value='female' control={<Radio/>} label='Female' />
-          </RadioGroup>
-          <br/>
-          <Button
-          type='submit'
-          variant='contained'
-          endIcon={<KeyboardArrowRightIcon />}
-          >
+          </Grid>
+          <Grid item>
+           
+            <TextField
+              className={classes.field}
+              label='First Name'
+              fullWidth
+              onChange={(e)=>setFirstName(e.target.value)}/>
+
+            <TextField
+              label='Last Name'
+              fullWidth
+              onChange={(e)=>setLastName(e.target.value)}
+              />
+            
+            <FormControl className={classes.field}>
+              <InputLabel id="label">Age</InputLabel>
+              <Select labelId="label" onChange={(e)=>setAgeRange(e.target.value)} >
+                <MenuItem value={0}>Less than 25</MenuItem>
+                <MenuItem value={1}>25-29</MenuItem>
+                <MenuItem value={2}>30-34</MenuItem>
+                <MenuItem value={3}>35-39</MenuItem>
+                <MenuItem value={4}>40-44</MenuItem>
+                <MenuItem value={5}>45-49</MenuItem>
+                <MenuItem value={6}>50-54</MenuItem>
+                <MenuItem value={7}>55-59</MenuItem>
+                <MenuItem value={8}>60 or more</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.field}>
+              <FormLabel>Gender:</FormLabel>
+              <RadioGroup onChange={(e)=>setGender(e.target.value)}>
+                <FormControlLabel value='male' control={<Radio/>} label='Male' />
+                <FormControlLabel value='female' control={<Radio/>} label='Female' />
+              </RadioGroup>
+            </FormControl>
+            <Button
+              className=""
+              type='submit'
+              variant='contained'
+              endIcon={<KeyboardArrowRightIcon />}
+            >
             Submit
-          </Button>
-        </FormControl>
-      </Container>
-
+            </Button>
+          </Grid>
+        </form>
+      </Grid>
     </div>
-
   )
 }
-
 export default UserInput;

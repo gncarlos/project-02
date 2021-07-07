@@ -1,74 +1,291 @@
-import { makeStyles } from '@material-ui/core/styles';
+import React, {useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import React, { useEffect, useState } from 'react';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import DeleteIcon from '@material-ui/icons/Delete';
+import TextField from '@material-ui/core/TextField';
 
+const useStyles1 = makeStyles((theme) => ({
+  root: {
+    flexShrink: 0,
+    marginLeft: theme.spacing(2.5),
+  },
+}));
 
+function TablePaginationActions(props) {
+  const classes = useStyles1();
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
 
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
 
-const useStyles = makeStyles({
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <div className={classes.root}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </div>
+  );
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
+
+const useStyles2 = makeStyles({
   table: {
-    minWidth: 650,
+    minWidth: 500,
   },
 });
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
 export default function ViewScores() {
-  const classes = useStyles();
+  const classes = useStyles2();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [testData, setTestData] = useState([]);
+  const [updatedFlag, setUpdatedFlag] = useState(false);
+  const [updateField, setUpdateField] = useState(false);
+  const [clickedId, setClickedId] = useState(null);
 
-  const [tests, setTests] = useState([]);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, testData.length - page * rowsPerPage);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleDelete = (id) => {
+    fetch('http://localhost:3001/tests', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({test_id: id}) // body data type must match "Content-Type" header
+    })
+    .then(() => setUpdatedFlag(!updatedFlag))//fetch chain      
+    .catch(err => {
+      console.error(err);
+    })
+  }
+
   useEffect(() => {
     fetch('http://localhost:3001/tests')
-    .then((res) => {
-      return res.json();
-      }
-    )
-    .then(setTests)
-    .catch(err => {
-      console.log('error', err);
-    });
-    },[]);
-
+      .then((response) => {
+        return response.json();
+      })
+      .then(setTestData)
+      .catch(err => {
+        console.error(err);
+      });//fetch
+  }, [updatedFlag]);//useEffect initial API call
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
+      <Table className={classes.table} aria-label="custom pagination table">
+      <TableHead>
           <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-          
+            <TableCell>Delete</TableCell>
+            <TableCell>Update</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>Age</TableCell>
+            <TableCell>Gender</TableCell>
+            <TableCell>Push-ups</TableCell>
+            <TableCell>Push-up score</TableCell>
+            <TableCell>Run time</TableCell>
+            <TableCell>Run time score</TableCell>
+            <TableCell>Sit-ups</TableCell>
+            <TableCell>Sit-up score</TableCell>
+            <TableCell>Test Date</TableCell>
+            <TableCell>Total score</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {tests && tests.map((test) => (
-            <TableRow key={test.test_id}>
-              <TableCell component="th" scope="row">
-                {test.first_name}
+          {(rowsPerPage > 0 && testData
+            ? testData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : testData
+          ).map((testData) => (
+            <TableRow key={testData.test_id}>
+              <TableCell onClick={() => {
+                handleDelete(testData.test_id)}
+                } component="th" scope="row">
+                 <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
               </TableCell>
-              <TableCell align="right">{test.last_name}</TableCell>
-              <TableCell align="right">{test.age}</TableCell>
              
+              {updateField === false || clickedId !== testData.test_id ?  
+              <>
+               <TableCell component="th" scope="row">
+                <Button onClick={() => {
+                  setClickedId(testData.test_id)
+                  setUpdateField(!updateField)}}>Update</Button>
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {testData.first_name}
+              </TableCell> 
+                    <TableCell component="th" scope="row">
+                    {testData.last_name}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.age}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.gender}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.push_ups}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.push_ups_score}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.run_time}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.run_time_score}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.sit_ups}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.sit_ups_score}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.test_date}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {testData.total_score}
+                  </TableCell>
+                  </>
+              :
+              <>
+                <TableCell component="th" scope="row">
+                <Button onClick={() => {
+                  setClickedId(testData.test_id)
+                  setUpdateField(!updateField)}}>Cancel</Button>
+              </TableCell>
+              <TableCell component="th" scope="row">
+                <TextField id="standard-basic" label="First Name" defaultValue={testData.first_name}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Last Name" defaultValue={testData.last_name}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Age" defaultValue={testData.age}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Gender" defaultValue={testData.gender}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Push Ups" defaultValue={testData.push_ups}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Push Up Score" defaultValue={testData.push_ups_score}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Run Time" defaultValue={testData.run_time}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Run Time Score" defaultValue={testData.run_time_score}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Sit Ups" defaultValue={testData.sit_ups}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Sit Ups Score" defaultValue={testData.sit_ups_score}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Test Date" defaultValue={testData.test_date}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField id="standard-basic" label="Total Score" defaultValue={testData.total_score}/>
+              </TableCell>
+              </>
+              }
             </TableRow>
           ))}
+          {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              colSpan={3}
+              count={testData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
     </TableContainer>
   );
