@@ -1,24 +1,67 @@
 import React from 'react';
+import { useState } from 'react';
+import { makeStyles } from '@material-ui/core';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { Container, TextField, Typography, Button } from '@material-ui/core';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+
+const useStyles = makeStyles({
+  field: {
+    marginTop: 20,
+    marginBottom: 20,
+    display: "block"
+  }
+});
 
 const ScoreInput = () => {
+  const [pushups, setPushups] = useState(0);
+  const [situps, setSitups] = useState(0);
+  const [runTime, setRunTime] = useState('');
+
+  const classes = useStyles()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(
+      'Push-ups:', pushups,
+      'Sit-ups:', situps,
+      'RunTime:', runTime)
+  }
   return (
 
     <div>
-      <h1>Enter your information</h1>
-      <form>
-        <label for="pushups">Pushups: </label>
-        <input type="text" id="pushUps"></input>
-        <br></br>
-        <label for='situps'>Sit-ups:</label>
-        <input type="text" id="age"></input>
-        <br></br>
-        <label for='runtime'>1.5 mile run:</label>
-        <input type="text" id="runtime"></input>
+      <CssBaseline />
+      <Container maxWidth='lg'>
+        <Typography variant='h4'>
+          Enter your score:
+        </Typography>
 
-      <input type="submit" value="submit"></input>
-    </form>
-
-  </div>
+        <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+          <TextField
+            className={classes.field}
+            label='Push-ups'
+            onChange={(e) => setPushups(e.target.value)}
+          />
+          <TextField
+            className={classes.field}
+            label='Sit-ups'
+            onChange={(e) => setSitups(e.target.value)}
+          />
+          <TextField
+            className={classes.field}
+            label='1.5 Mile Run Time'
+            onChange={(e) => setRunTime(e.target.value)}
+          />
+          <Button
+              type='submit'
+              variant='contained'
+              endIcon={<KeyboardArrowRightIcon />}
+          >
+            Submit
+          </Button>
+        </form>
+      </Container>
+    </div>
 
   )
 }

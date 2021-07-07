@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Container, TextField, Typography, Radio, RadioGroup, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
 import { FormControl, FormControlLabel, FormLabel} from '@material-ui/core';
@@ -12,17 +13,21 @@ const useStyles = makeStyles({
   }
 });
 
-const handleSubmit = (e) => {
-  e.preventDefault()
-  // console.log(
-  //   'name:', name,
-  //   'age group value:', ageGroup,
-  //   'gender:', gender
-  // )
-}
-
 const UserInput = () => {
+  const [name, setName] = useState('');
+  const [ageGroup, setAgeGroup] = useState(0);
+  const [gender, setGender] = useState('');
+
   const classes = useStyles()
+  let x = ''
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(
+      'Name:', name,
+      'Age Group:', ageGroup,
+      'Gender:', gender)
+  }
 
   return(
 
@@ -39,11 +44,13 @@ const UserInput = () => {
           <TextField
             className={classes.field}
             label='Name'
+            required
+            onChange={(e) => setName(e.target.value)}
             />
-          <br/>
+
           <FormControl className={classes.field}>
             <InputLabel id="label">Age</InputLabel>
-            <Select labelId="label" >
+            <Select labelId="label" onChange={(e) => setAgeGroup(e.target.value)}>
               <MenuItem value={1}>Less than 25</MenuItem>
               <MenuItem value={2}>25-29</MenuItem>
               <MenuItem value={3}>30-34</MenuItem>
@@ -55,15 +62,14 @@ const UserInput = () => {
               <MenuItem value={9}>60 or more</MenuItem>
             </Select>
           </FormControl>
-          <br/>
+
           <FormControl className={classes.field}>
             <FormLabel>Gender:</FormLabel>
-            <RadioGroup>
+            <RadioGroup onChange={(e) => setGender(e.target.value)}>
               <FormControlLabel value='male' control={<Radio/>} label='Male' />
               <FormControlLabel value='female' control={<Radio/>} label='Female' />
             </RadioGroup>
           </FormControl>
-          <br/>
 
           <Button
           type='submit'
