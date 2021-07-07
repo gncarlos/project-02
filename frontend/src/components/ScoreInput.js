@@ -2,7 +2,7 @@ import React from 'react';
 
 const ScoreInput = () => {
   return (
-  
+
     <div>
       <h1>Enter your information</h1>
       <form>
@@ -10,15 +10,15 @@ const ScoreInput = () => {
         <input type="text" id="pushUps"></input>
         <br></br>
         <label for='situps'>Sit-ups:</label>
-        <input tupe="text" id="age"></input>
+        <input type="text" id="age"></input>
         <br></br>
         <label for='runtime'>1.5 mile run:</label>
-        <input tupe="text" id="runtime"></input>
-        
+        <input type="text" id="runtime"></input>
+
       <input type="submit" value="submit"></input>
     </form>
 
-  </div>  
+  </div>
 
   )
 }

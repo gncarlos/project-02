@@ -1,17 +1,10 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ScoreInput from './ScoreInput.js';
 import ViewScores from './ViewScores.js';
 import UserInput from './UserInput.js';
 
 const Nav = () => {
-
 
   return (<>
     <Router>
@@ -21,7 +14,6 @@ const Nav = () => {
         <Route path ="/ViewScores" component={ViewScores}/>
       </Switch>
     </Router>
-
 
     </>)
 }

@@ -9,8 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import React, { useEffect, useState } from 'react';
 
 
-
-
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -54,7 +52,7 @@ export default function ViewScores() {
             <TableCell>Dessert (100g serving)</TableCell>
             <TableCell align="right">Calories</TableCell>
             <TableCell align="right">Fat&nbsp;(g)</TableCell>
-          
+
           </TableRow>
         </TableHead>
         <TableBody>
@@ -65,7 +63,7 @@ export default function ViewScores() {
               </TableCell>
               <TableCell align="right">{test.last_name}</TableCell>
               <TableCell align="right">{test.age}</TableCell>
-             
+
             </TableRow>
           ))}
         </TableBody>
