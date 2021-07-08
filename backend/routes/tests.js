@@ -47,7 +47,7 @@ router.delete('/', (req, res) => {
     knex('tests')
     .where('test_id', '=', req.body.test_id)
     .del()
-    .then(() => res.status(200).send("Item deleted"))   
+    .then(() => res.status(200).send("Item deleted"))
     .catch(err => res.status(404).send("There was error, maybe the test_id was invalid"))
   } else {
     res.status(400).send("must have a test_id")
@@ -58,13 +58,13 @@ module.exports = router;
 
 
 // order that we need
-// "age", "first_name", "gender", "last_name", "push_ups", "push_ups_score", "run_time", 
+// "age", "first_name", "gender", "last_name", "push_ups", "push_ups_score", "run_time",
 // "run_time_score", "sit_ups", "sit_ups_score", "test_date", "total_score"
 
 // order that we have
-// {"first_name": "Joseph", "last_name": "Hahn", "gender": "male", "age": 24, 
-// "push_ups": 79, "push_ups_score": 30.0, "sit_ups": 80, "sit_ups_score": 30.0, "run_time": "11:23", 
+// {"first_name": "Joseph", "last_name": "Hahn", "gender": "male", "age": 24,
+// "push_ups": 79, "push_ups_score": 30.0, "sit_ups": 80, "sit_ups_score": 30.0, "run_time": "11:23",
  // "run_time_score": 40.0, "total_score": 100.0, "test_date": "2019-11-01"}
 
- // {"age": 24, "first_name": "Joseph", "gender": "male", "last_name": "Hahn", "push_ups": 79, "push_ups_score": 30.0, "run_time": "11:23", "run_time_score": 
+ // {"age": 24, "first_name": "Joseph", "gender": "male", "last_name": "Hahn", "push_ups": 79, "push_ups_score": 30.0, "run_time": "11:23", "run_time_score":
  // 40.0, "sit_ups": 80, "sit_ups_score": 30.0, "test_date": "2019-11-01", "total_score": 100.0}
