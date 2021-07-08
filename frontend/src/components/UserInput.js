@@ -3,41 +3,34 @@ import { FormControl, FormControlLabel, FormLabel, Grid } from '@material-ui/cor
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { makeStyles } from '@material-ui/core';
 import {useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 
 const useStyles = makeStyles({
   field: {
     marginTop: 20,
     marginBottom: 20,
-    display: "block"
+    diplay: "block"
   }
 });
 
 const UserInput = (props) => {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
+  const [age, setAge] = useState(0)
   const [ageRange, setAgeRange] = useState("")
   const [gender, setGender] = useState("")
 
   const classes = useStyles()
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    return (
-      props.history.push("/ScoreInput", { firstName: firstName, lastName: lastName, ageRange: ageRange, gender: gender })
-    )
-  }
-
   return(
     <div>
       <Grid
         container
-        justify="center"
+        justifyContent="center"
         alignItems='center'
         direction='column'
         >
-        <form onSubmit={handleSubmit}>
+        {/* <form onSubmit={handleSubmit}> */}
           <Grid item>
             <Typography variant='h4'>
               Enter your information:
@@ -52,12 +45,20 @@ const UserInput = (props) => {
               onChange={(e)=>setFirstName(e.target.value)}/>
 
             <TextField
+              className={classes.field}
               label='Last Name'
               fullWidth
               onChange={(e)=>setLastName(e.target.value)}
               />
             
-            <FormControl className={classes.field}>
+            <TextField
+              className={classes.field}
+              label='Age'
+              type="number"
+              fullWidth
+              onChange={(e)=>setAge(e.target.value)}
+              />
+            {/* <FormControl className={classes.field}>
               <InputLabel id="label">Age</InputLabel>
               <Select labelId="label" onChange={(e)=>setAgeRange(e.target.value)} >
                 <MenuItem value={0}>Less than 25</MenuItem>
@@ -70,7 +71,7 @@ const UserInput = (props) => {
                 <MenuItem value={7}>55-59</MenuItem>
                 <MenuItem value={8}>60 or more</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl> */}
             <FormControl className={classes.field}>
               <FormLabel>Gender:</FormLabel>
               <RadioGroup onChange={(e)=>setGender(e.target.value)}>
@@ -78,16 +79,24 @@ const UserInput = (props) => {
                 <FormControlLabel value='female' control={<Radio/>} label='Female' />
               </RadioGroup>
             </FormControl>
+            <Link to={{
+                pathname: "/ScoreInput",
+                state: { firstName: firstName, lastName: lastName, ageRange: ageRange, gender: gender }
+              }}>
+
             <Button
-              className=""
               type='submit'
               variant='contained'
               endIcon={<KeyboardArrowRightIcon />}
             >
             Submit
             </Button>
+            
+            </Link>
+
+           
           </Grid>
-        </form>
+        {/* </form> */}
       </Grid>
     </div>
   )

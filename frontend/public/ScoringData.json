@@ -1,0 +1,69 @@
+[
+  {
+    "gender": "Male",
+    "ageRange": "<25",
+    "cardio": [
+      {"runTime": "<9:12", "Points": "60.0"},
+      {"runTime": "9:13 - 9:34", "Points": "59.5"},
+      {"runTime": "9:35 - 9:45", "Points": "59.0"},
+      {"runTime": "9:46 - 9:58", "Points": "58.5"},
+      {"runTime": "9:59 - 10:10", "Points": "58.0"},
+      {"runTime": "10:11 - 10:23", "Points": "57.5"},
+      {"runTime": "10:24 - 10:37", "Points": "57.0"},
+      {"runTime": "10:38 - 10:51", "Points": "56.5"},
+      {"runTime": "10:52 - 11:06", "Points": "56.0"},
+      {"runTime": "11:07 - 11:22", "Points": "55.5"},
+      {"runTime": "11:23 - 11:38", "Points": "55.0"},
+      {"runTime": "11:39 - 11:56", "Points": "54.5"},
+      {"runTime": "11:57 - 12:14", "Points": "54.0"},
+      {"runTime": "12:15 - 12:33", "Points": "53.5"},
+      {"runTime": "12:34 - 12:53", "Points": "52.0"},
+      {"runTime": "12:54 - 13:14", "Points": "50.5"},
+      {"runTime": "13:15 - 13:36", "Points": "49.0"},
+      {"runTime": "13:37 - 14:00", "Points": "46.5"},
+      {"runTime": "14:01 - 14:25", "Points": "44.0"},
+      {"runTime": "14:26 - 14:52", "Points": "41.0"},
+      {"runTime": "14:53 - 15:20", "Points": "38.0"},
+      {"runTime": "15:21 - 15:50", "Points": "35.0"}
+    ],
+    "muscular-PU": [
+      {"pushUps": ">67", "Points": "20.0"}
+    ],
+    "muscular-SU": [
+      {"sitUps": ">58", "Points": "20.0"}
+    ]
+  },
+  {
+    "gender": "Female",
+    "ageRange": "<25",
+    "cardio": [
+      {"runTime": "<10:23", "Points": "60.0"},
+      {"runTime": "10:24 - 10:51", "Points": "59.5"},
+      {"runTime": "10:52 - 11:06", "Points": "59.0"},
+      {"runTime": "11:07 - 11:22", "Points": "58.5"},
+      {"runTime": "11:23 - 11:38", "Points": "58.0"},
+      {"runTime": "11:39 - 11:56", "Points": "57.5"},
+      {"runTime": "11:57 - 12:14", "Points": "57.0"},
+      {"runTime": "12:15 - 12:33", "Points": "56.5"},
+      {"runTime": "12:34 - 12:53", "Points": "56.0"},
+      {"runTime": "12:54 - 13:14", "Points": "55.5"},
+      {"runTime": "13:15 - 13:36", "Points": "55.0"},
+      {"runTime": "13:37 - 14:00", "Points": "54.5"},
+      {"runTime": "14:01 - 14:25", "Points": "54.0"},
+      {"runTime": "14:26 - 14:52", "Points": "53.5"},
+      {"runTime": "14:53 - 15:20", "Points": "52.0"},
+      {"runTime": "15:21 - 15:50", "Points": "50.5"},
+      {"runTime": "15:51 - 16:22", "Points": "49.0"},
+      {"runTime": "16:23 - 16:57", "Points": "46.0"},
+      {"runTime": "16:58 - 17:34", "Points": "42.5"},
+      {"runTime": "17:35 - 18:14", "Points": "39.0"},
+      {"runTime": "18:15 -18:56", "Points": "35.0"}
+    ],
+    "muscular-PU": [
+      {"pushUps": ">67", "Points": "20.0"}
+    ],
+    "muscular-SU": [
+      {"sitUps": ">58", "Points": "20.0"}
+    ]
+  }
+]

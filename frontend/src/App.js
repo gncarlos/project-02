@@ -10,6 +10,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import Sandbox from './components/Sandbox';
 
 
 
@@ -18,7 +19,10 @@ function App() {
     <Router>
     <Nav/>
       <Switch>
-        <Route exact path ="/" component={UserInput}/>
+        <Route exact path ="/">
+          <UserInput/>
+          {/* <Sandbox/> */}
+        </Route>
         <Route path ="/ScoreInput" component={ScoreInput}/>
         <Route path ="/ViewScores" component={ViewScores}/>
       </Switch>
