@@ -8,6 +8,8 @@ import ScoreInput from './ScoreInput.js';
 import ViewScores from './ViewScores.js';
 import UserInput from './UserInput.js';
 import { Link } from "react-router-dom";
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   link: {
     textDecoration:"none",
     color: "white",
-    marginRight: "25px",
+    marginRight: "10px",
   },
   toolbar: theme.mixins.toolbar
 }));
@@ -28,13 +30,15 @@ const Nav = () => {
   const classes = useStyles();
 
   return (<>
-    <div className={classes.root}>
+    <div>
       <AppBar position="static">
-        <Toolbar>
-          {/* <Button color="inherit">Add Score</Button>
-          <Button color="inherit">View and Edit Scores</Button> */}
-          <Link to="/" className={classes.link}><Typography variant="h6">Add Score</Typography></Link>
-          <Link to="/ViewScores" className={classes.link}><Typography variant="h6">View Scores</Typography></Link>
+        <Toolbar variant='dense'>
+          <Link to="/" className={classes.link}>
+            <Typography variant="h6">Add Score</Typography>
+          </Link>
+          <Link to="/ViewScores" className={classes.link}>
+            <Typography variant="h6">View Scores</Typography>
+          </Link>
         </Toolbar>
       </AppBar>
     </div>

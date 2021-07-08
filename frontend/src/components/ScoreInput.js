@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { TextField, Typography, Radio, RadioGroup, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
 import { FormControl, FormControlLabel, FormLabel, Grid } from '@material-ui/core';
@@ -12,64 +12,256 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
+  grid: {
+    width: '100%',
+    marging: '10px',
+    minHeight: '75vh'
+  },
   field: {
     marginTop: 20,
     marginBottom: 20,
     display: "block"
+  },
+  btn: {
+    marginLeft: 10,
+    marginRight: 10
   }
 });
 
 const ScoreInput = (props) => {
+  const [ageRange, setAgeRange] = useState("")
   const [pushups, setPushups] = useState(0);
   const [situps, setSitups] = useState(0);
   const [runTime, setRunTime] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [runMin, setRunMin] = useState('')
+  const [runSec, setRunSec] = useState('')
+  const [totalScore, setTotalScore] = useState(0)
+  const [displayScore, setdisplayScore] = useState(false)
 
   const classes = useStyles()
+  
+  const handleClick = () => {
+    let {score, time} = getRunScore()
+    let pushupInput = getPushupsScore()
+    let situpInput = getSitupsScore()
+    let scoreTotal = Math.round((score + pushupInput + situpInput) * 100) / 100
+    setTotalScore(scoreTotal)
+    console.log("score: ", score, "time: ", time)
+    console.log(pushupInput)
+  
+    ageGroup()
+    setdisplayScore(true)
+  }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     let firstName = props.location.state.firstName
     let lastName = props.location.state.lastName
-    let ageRange = props.location.state.ageRange
+    let age = props.location.state.age
     let gender = props.location.state.gender
-    getRunScore()
-
+    let {score, time} = getRunScore()
+    let pushupInput = getPushupsScore()
+    let situpInput = getSitupsScore()
+    let scoreTotal = Math.round((score + pushupInput + situpInput) * 100) / 100
+    setTotalScore(scoreTotal)
     let object = {
       first_name: firstName,
       last_name: lastName,
-      age: ageRange,
+      age: age,
       gender: gender,
       push_ups: pushups,
-      push_ups_score: getPushupsScore(),
-      run_time: runTime,
-      run_time_score: "40.0",
+      push_ups_score: pushupInput,
+      run_time: time,
+      run_time_score: score,
       sit_ups: situps,
-      sit_ups_score: getPushupsScore(),
-      test_date: "2019-11-01",
-      total_score: "100.0"
+      sit_ups_score: situpInput,
+      test_date: selectedDate,
+      total_score: scoreTotal
     }
     console.log(object)
-    return(object)
+    fetch('http://localhost:3001/tests', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(object) // body data type must match "Content-Type" header
+    })
+    .then(() => {
+      setPushups(0)
+      setSitups(0)
+      setRunTime('')
+      setSelectedDate(new Date())
+      setRunMin(0)
+      setRunSec(0)
+    })   
+    .catch(err => {
+      console.error(err);
+    })
+    
+    ageGroup()
   }
-
+  
   function getRunScore() {
-    console.log("this is the run time " , runTime)
+    let maxPoints = 60
+    let maxRun = 9.12
+    let time = [runMin, runSec].join(':')
+    let forRunTime = [runMin.toString(), runSec.toString()].join(':')
+    setRunTime(forRunTime)
+    let runNum = parseFloat([runMin, runSec].join('.'))
+    if (runNum < maxRun) {
+      return {score: 60, time: time}
+    } else {
+      return {score: Math.round(((maxRun / runNum) * maxPoints) * 100) / 100, time: time}
+    }
   }
 
-  function getPushupsScore(pushups) {
+  function getPushupsScore() {
     let maxPushups = 67
     let maxScore = 20
-    
-    if (pushups + props.location.state.ageRange >= maxPushups) {
-      return maxScore.toString()
+    if (pushups >= maxPushups) {
+      return maxScore
     } else {
-      return (((pushups + props.location.state.ageRange)/ maxPushups) * maxScore).toString()
+      return Math.round(((pushups / maxPushups) * maxScore) * 100) / 100
     }
+  }
 
-  //   if (pushups >= 67){
+  function getSitupsScore() {
+    let maxSitups = 58
+    let maxScore = 20
+    if (situps >= maxSitups) {
+      return maxScore
+    } else {
+      return Math.round(((situps/ maxSitups) * maxScore) * 100) / 100
+    }
+  }
+
+  const ageGroup = () => {
+    let age = props.location.state.age
+
+    if (age < 25) setAgeRange("<25")
+    if (age >=25 && age <= 29) setAgeRange("25-29")
+    if (age >=30 && age <= 34) setAgeRange("30-34")
+    if (age >=35 && age <= 39) setAgeRange("35-39")
+    if (age >=40 && age <= 44) setAgeRange("30-34")
+    if (age >=45 && age <= 49) setAgeRange("35-39")
+    if (age >=50 && age <= 54) setAgeRange("30-34")
+    if (age >=55 && age <= 59) setAgeRange("35-39")
+    if (age >= 60) setAgeRange("60>")
+  }
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  }
+  
+  const displayResults = () => {
+    if(displayScore === true) {
+      console.log('display score', totalScore)
+      let displayThis = `Your score is ${totalScore}`
+      return (
+        <Grid item md={6}>
+          <p id="total_score_field">{displayThis}</p>
+        </Grid>
+
+      )
+    }
+    else {
+      return <></>
+    }
+  }
+
+  return (
+    <div>
+      <Grid
+        className={classes.grid}
+        container
+        justifyContent="center"
+        alignItems='center'
+        direction='column'
+      >
+          <Grid item md={6}>
+            <Typography variant='h4'>
+              Enter your score:
+            </Typography>
+            <TextField
+              id="pushUps_field"
+              className={classes.field}
+              label='Push-ups'
+              type="number"
+              fullWidth
+              onChange={(e) => setPushups(Number(e.target.value))}
+            />
+            <TextField
+              id="sitUps_field"
+              className={classes.field}
+              type="number"
+              label='Sit-ups'
+              fullWidth
+              onChange={(e) => setSitups(Number(e.target.value))}
+            />
+            <TextField
+              id="min_field"
+              className={classes.field}
+              type="number"
+              label='min'
+              fullWidth
+              min="0"
+              max="59"
+              onChange={(e) => setRunMin(e.target.value)}
+            />
+            <TextField
+              id="sec_field"
+              className={classes.field}
+              type="number"
+              label='sec'
+              fullWidth
+              min="0"
+              max="59"
+              onChange={(e) => setRunSec(e.target.value)}
+            />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                className={classes.field}
+                fullWidth
+                id="calendar_field"
+                disableToolbar
+                variant="inline"
+                format="yyyy-MM-dd"
+                margin="normal"
+                label="Test Date:"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+            </MuiPickersUtilsProvider>
+            <Button
+                className={classes.btn}
+                type='submit'
+                variant='contained'
+                endIcon={<KeyboardArrowRightIcon />}
+                onClick={handleSubmit}
+                >Submit
+            </Button>
+            <Button className={classes.btn}
+                    variant='contained' 
+                    onClick={()=> {handleClick()}}
+                    className="calculate_field"
+                    >Calculate
+            </Button>
+          </Grid>
+          {displayResults()}
+      </Grid>
+    </div>
+  )
+}
+export default ScoreInput;
+
+// {first_name: "Jos", last_name: Hahn2,"age": 27, gender: "male",  push_ups: 79, push_ups_score: "30.0", run_time: "11:23", run_time_score: "40.0", sit_ups: 80, sit_ups_score: "30.0", test_date: "2019-11-01", total_score: "100.0"}
+
+
+//   if (pushups >= 67){
   //     return 20
   //   } else if ( pushups < 67 && pushups > 48) {
   //     if (pushups === 55){
@@ -106,104 +298,3 @@ const ScoreInput = (props) => {
   //   } else {
   //     return (0)
   //   }
-  }
-
-  function getSitupsScore() {
-    let maxSitups = 58
-    let maxScore = 20
-    
-    if (situps + props.location.state.ageRange >= maxSitups) {
-      return maxScore.toString()
-    } else {
-      return (((situps + props.location.state.ageRange)/ maxSitups) * maxScore).toString()
-    }
-  }
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  }
-
-  return (
-    <div>
-      <Grid
-        container
-        justify="center"
-        alignItems='center'
-        direction='column'
-      >
-        <Grid item>
-          <Typography variant='h4'>
-            Enter your score:
-          </Typography>
-        </Grid>
-
-        <form noValidate autoComplete='off' onSubmit={handleSubmit}>
-          <Grid item>
-          
-            <TextField
-              className={classes.field}
-              label='Push-ups'
-              onChange={(e) => setPushups(Number(e.target.value))}
-            />
-            <TextField
-              className={classes.field}
-              label='Sit-ups'
-              onChange={(e) => setSitups(Number(e.target.value))}
-            />
-            <FormControl className={classes.field}>
-              <InputLabel id="label">Run Time</InputLabel>
-              <Select labelId="label" onChange={(e)=>setRunTime(e.target.value)} >
-                <MenuItem value={0}>Less than 9:12</MenuItem>
-                <MenuItem value={1}>9:13 - 9:34</MenuItem>
-                <MenuItem value={2}>9:35 - 9:45</MenuItem>
-                <MenuItem value={3}>9:46 - 9:58</MenuItem>
-                <MenuItem value={4}>9:59 - 10:10</MenuItem>
-                <MenuItem value={5}>10:11 - 10:23</MenuItem>
-                <MenuItem value={6}>10:24 - 10:37</MenuItem>
-                <MenuItem value={7}>10:38 - 10:51</MenuItem>
-                <MenuItem value={8}>10:52 - 11:06</MenuItem>
-                <MenuItem value={9}>11:07 - 11:22</MenuItem>
-                <MenuItem value={10}>11:23 - 11:38</MenuItem>
-                <MenuItem value={11}>11:39 - 11:56</MenuItem>
-                <MenuItem value={12}>11:57 - 12:14</MenuItem>
-                <MenuItem value={13}>12:15 - 12:33</MenuItem>
-                <MenuItem value={14}>12:34 - 12:53</MenuItem>
-                <MenuItem value={15}>12:54 - 13:14</MenuItem>
-                <MenuItem value={16}>13:15 - 13:36</MenuItem>
-                <MenuItem value={17}>13:37 - 14:00</MenuItem>
-                <MenuItem value={18}>14:01 - 14:25</MenuItem>
-                <MenuItem value={19}>14:26 - 14:52</MenuItem>
-                <MenuItem value={20}>14:53 - 15:20</MenuItem>
-                <MenuItem value={21}>15:21 - 15:50</MenuItem>
-                
-              </Select>
-            </FormControl>
-             
-
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                className={classes.field}
-                disableToolbar
-                variant="inline"
-                format="yyyy-MM-dd"
-                margin="normal"
-                label="Test Date:"
-                value={selectedDate}
-                onChange={handleDateChange}
-              />
-            </MuiPickersUtilsProvider>
-            <br/>
-            <Button
-                type='submit'
-                variant='contained'
-                endIcon={<KeyboardArrowRightIcon />}
-            >
-              Submit
-            </Button>
-          </Grid>
-        </form>
-      </Grid>
-    </div>
-  )
-}
-export default ScoreInput;

@@ -1,97 +1,89 @@
 import { TextField, Typography, Radio, RadioGroup, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
-import { FormControl, FormControlLabel, FormLabel, Grid } from '@material-ui/core';
+import { FormControl, FormControlLabel, FormLabel, Grid, Paper} from '@material-ui/core';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { makeStyles } from '@material-ui/core';
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  grid: {
+    width: '100%',
+    marging: '10px',
+    minHeight: '75vh'
+  },
   field: {
     marginTop: 20,
     marginBottom: 20,
     display: "block"
   }
-});
+}));
 
 const UserInput = (props) => {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
-  const [ageRange, setAgeRange] = useState("")
+  const [age, setAge] = useState(0)
   const [gender, setGender] = useState("")
 
   const classes = useStyles()
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    return (
-      props.history.push("/ScoreInput", { firstName: firstName, 
-                                          lastName: lastName, 
-                                          ageRange: ageRange, 
-                                          gender: gender 
-                                        })
-    )
-  }
-
+  
   return(
     <div>
       <Grid
+        className={classes.grid}
         container
-        justify="center"
+        justifyContent="center"
         alignItems='center'
         direction='column'
         >
-        <form onSubmit={handleSubmit}>
           <Grid item>
-            <Typography variant='h4'>
-              Enter your information:
-            </Typography>
-          </Grid>
-          <Grid item>
-           
-            <TextField
-              className={classes.field}
-              label='First Name'
-              fullWidth
-              onChange={(e)=>setFirstName(e.target.value)}/>
-
-            <TextField
-              label='Last Name'
-              fullWidth
-              onChange={(e)=>setLastName(e.target.value)}
-              />
+            {/* <Paper className={classes.paper}> */}
+              <Typography variant='h4'>
+                Enter your information:
+              </Typography>
             
-            <FormControl className={classes.field}>
-              <InputLabel id="label">Age</InputLabel>
-              <Select labelId="label" onChange={(e)=>setAgeRange(e.target.value)} >
-                <MenuItem value={0}>Less than 25</MenuItem>
-                <MenuItem value={1}>25-29</MenuItem>
-                <MenuItem value={2}>30-34</MenuItem>
-                <MenuItem value={3}>35-39</MenuItem>
-                <MenuItem value={4}>40-44</MenuItem>
-                <MenuItem value={5}>45-49</MenuItem>
-                <MenuItem value={6}>50-54</MenuItem>
-                <MenuItem value={7}>55-59</MenuItem>
-                <MenuItem value={8}>60 or more</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.field}>
-              <FormLabel>Gender:</FormLabel>
-              <RadioGroup onChange={(e)=>setGender(e.target.value)}>
-                <FormControlLabel value='male' control={<Radio/>} label='Male' />
-                <FormControlLabel value='female' control={<Radio/>} label='Female' />
-              </RadioGroup>
-            </FormControl>
-            <Button
-              className=""
-              type='submit'
-              variant='contained'
-              endIcon={<KeyboardArrowRightIcon />}
-            >
-            Submit
-            </Button>
+              <TextField
+                className={classes.field}
+                label='First Name'
+                id="first_name_field"
+                fullWidth
+                onChange={(e)=>setFirstName(e.target.value)}/>
+
+              <TextField
+                className={classes.field}
+                label='Last Name'
+                id="last_name_field"
+                fullWidth
+                onChange={(e)=>setLastName(e.target.value)}
+                />
+              
+              <TextField
+                className={classes.field}
+                label='Age'
+                type='number'
+                id="age_field"
+                fullWidth
+                onChange={(e)=>setAge(e.target.value)}
+                />
+              <FormControl className={classes.field}>
+                <FormLabel>Gender:</FormLabel>
+                <RadioGroup onChange={(e)=>setGender(e.target.value)} className="radio_field">
+                  <FormControlLabel value='male' control={<Radio color='primary'/>} label='Male' />
+                  <FormControlLabel value='female' control={<Radio color='primary'/>} label='Female' />
+                </RadioGroup>
+              </FormControl>
+              <Link to={{
+                pathname: "/ScoreInput",
+                state: { firstName: firstName, lastName: lastName, age: age, gender: gender}
+              }}>
+              <Button
+                type='submit'
+                variant='contained'
+                endIcon={<KeyboardArrowRightIcon />}
+                className="continue_field"
+              >Continue</Button>
+              </Link>
+            {/* </Paper> */}
           </Grid>
-        </form>
       </Grid>
     </div>
   )
