@@ -25,7 +25,11 @@ const UserInput = (props) => {
     e.preventDefault()
 
     return (
-      props.history.push("/ScoreInput", { firstName: firstName, lastName: lastName, ageRange: ageRange, gender: gender })
+      props.history.push("/ScoreInput", { firstName: firstName, 
+                                          lastName: lastName, 
+                                          ageRange: ageRange, 
+                                          gender: gender 
+                                        })
     )
   }
 

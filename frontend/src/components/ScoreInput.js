@@ -17,7 +17,6 @@ const useStyles = makeStyles({
   field: {
     marginTop: 20,
     marginBottom: 20,
-    marginRight: 5,
     display: "block"
   }
 });
@@ -179,9 +178,7 @@ const ScoreInput = (props) => {
                 
               </Select>
             </FormControl>
-
-
-                  
+             
 
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
@@ -210,5 +207,3 @@ const ScoreInput = (props) => {
   )
 }
 export default ScoreInput;
-
-// {first_name: "Jos", last_name: Hahn2,"age": 27, gender: "male",  push_ups: 79, push_ups_score: "30.0", run_time: "11:23", run_time_score: "40.0", sit_ups: 80, sit_ups_score: "30.0", test_date: "2019-11-01", total_score: "100.0"}
