@@ -19,14 +19,19 @@ const Sandbox = () => {
   }
   useEffect(()=>{getData()},[])
 
+  const filter = (gender = 'male', ageRange = '25-29') => {
+    let filteredData = data.filter((scoreData) => scoreData.gender === gender)
+                           .map((scoreData) => {
+                            return scoreData.cardio.map((times) => {
+                              return <p>{scoreData.gender} {times.runTime} {times.Points}</p>
+                            })
+                           })
+    return filteredData
+  }
+
   return (<>
-  Sandbox Component
-  
-  {data.map((scoreData) => {
-    return scoreData.cardio.map((times) => {
-      return <p>{times.runTime}</p>
-      })
-    })}
+    Sandbox Component
+    {filter()}
   </>)
 }
 
