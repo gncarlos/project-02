@@ -1,23 +1,16 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core';
-import { TextField, Typography, Radio, RadioGroup, InputLabel, MenuItem, Select, Button } from '@material-ui/core';
-import { FormControl, FormControlLabel, FormLabel, Grid } from '@material-ui/core';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { useState } from 'react';
+import { makeStyles, TextField, Typography,  Button, Grid } from '@material-ui/core';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-import { Link } from 'react-router-dom';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles({
   grid: {
     width: '100%',
-    marging: '10px',
     minHeight: '75vh'
   },
   field: {
@@ -31,29 +24,28 @@ const useStyles = makeStyles({
   }
 });
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const ScoreInput = (props) => {
-  const [ageRange, setAgeRange] = useState("")
   const [pushups, setPushups] = useState(0);
   const [situps, setSitups] = useState(0);
-  const [runTime, setRunTime] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [runMin, setRunMin] = useState('')
   const [runSec, setRunSec] = useState('')
   const [totalScore, setTotalScore] = useState(0)
   const [displayScore, setdisplayScore] = useState(false)
+  const [open, setOpen] = React.useState(false);
 
   const classes = useStyles()
   
   const handleClick = () => {
-    let {score, time} = getRunScore()
+    let {score } = getRunScore()
     let pushupInput = getPushupsScore()
     let situpInput = getSitupsScore()
     let scoreTotal = Math.round((score + pushupInput + situpInput) * 100) / 100
     setTotalScore(scoreTotal)
-    console.log("score: ", score, "time: ", time)
-    console.log(pushupInput)
-  
-    ageGroup()
     setdisplayScore(true)
   }
 
@@ -93,24 +85,20 @@ const ScoreInput = (props) => {
     .then(() => {
       setPushups(0)
       setSitups(0)
-      setRunTime('')
       setSelectedDate(new Date())
       setRunMin(0)
       setRunSec(0)
+      setOpen(true);
     })   
     .catch(err => {
       console.error(err);
     })
-    
-    ageGroup()
   }
   
   function getRunScore() {
     let maxPoints = 60
     let maxRun = 9.12
     let time = [runMin, runSec].join(':')
-    let forRunTime = [runMin.toString(), runSec.toString()].join(':')
-    setRunTime(forRunTime)
     let runNum = parseFloat([runMin, runSec].join('.'))
     if (runNum < maxRun) {
       return {score: 60, time: time}
@@ -139,23 +127,30 @@ const ScoreInput = (props) => {
     }
   }
 
-  const ageGroup = () => {
-    let age = props.location.state.age
+  // const ageGroup = () => {
+  //   let age = props.location.state.age
 
-    if (age < 25) setAgeRange("<25")
-    if (age >=25 && age <= 29) setAgeRange("25-29")
-    if (age >=30 && age <= 34) setAgeRange("30-34")
-    if (age >=35 && age <= 39) setAgeRange("35-39")
-    if (age >=40 && age <= 44) setAgeRange("30-34")
-    if (age >=45 && age <= 49) setAgeRange("35-39")
-    if (age >=50 && age <= 54) setAgeRange("30-34")
-    if (age >=55 && age <= 59) setAgeRange("35-39")
-    if (age >= 60) setAgeRange("60>")
-  }
+  //   if (age < 25) setAgeRange("<25")
+  //   if (age >=25 && age <= 29) setAgeRange("25-29")
+  //   if (age >=30 && age <= 34) setAgeRange("30-34")
+  //   if (age >=35 && age <= 39) setAgeRange("35-39")
+  //   if (age >=40 && age <= 44) setAgeRange("30-34")
+  //   if (age >=45 && age <= 49) setAgeRange("35-39")
+  //   if (age >=50 && age <= 54) setAgeRange("30-34")
+  //   if (age >=55 && age <= 59) setAgeRange("35-39")
+  //   if (age >= 60) setAgeRange("60>")
+  // }
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
   }
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
   
   const displayResults = () => {
     if(displayScore === true) {
@@ -182,9 +177,9 @@ const ScoreInput = (props) => {
         alignItems='center'
         direction='column'
       >
-          <Grid item md={6}>
+          <Grid item >
             <Typography variant='h4'>
-              Enter your score:
+              Enter your score: 
             </Typography>
             <TextField
               id="pushUps_field"
@@ -240,18 +235,24 @@ const ScoreInput = (props) => {
                 className={classes.btn}
                 type='submit'
                 variant='contained'
+                color='primary'
                 endIcon={<KeyboardArrowRightIcon />}
                 onClick={handleSubmit}
                 >Submit
             </Button>
-            <Button className={classes.btn}
+            <Button className={`${classes.btn} calculate_field`}
                     variant='contained' 
-                    onClick={()=> {handleClick()}}
-                    className="calculate_field"
+                    color='secondary'
+                    onClick={() => handleClick()}
                     >Calculate
             </Button>
           </Grid>
           {displayResults()}
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success">
+              PT score has been successfully submitted!
+            </Alert>
+          </Snackbar>
       </Grid>
     </div>
   )
