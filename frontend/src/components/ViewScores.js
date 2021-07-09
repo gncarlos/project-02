@@ -98,10 +98,10 @@ export default function ViewScores() {
   const [updatedFlag, setUpdatedFlag] = useState(false);
   const [updateField, setUpdateField] = useState(false);
   const [clickedId, setClickedId] = useState(null);
-  const [pushups, setPushups] = useState(null);
-  const [situps, setSitups] = useState(null);
-  const [runTime, setRunTime] = useState(null);
-  const [tmpRowValues, setTmpRowValues] = useState([]);
+  // const [pushups, setPushups] = useState(null);
+  // const [situps, setSitups] = useState(null);
+  // const [runTime, setRunTime] = useState(null);
+  const [tmpRowValues, setTmpRowValues] = useState({});
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, testData.length - page * rowsPerPage);
 
@@ -130,9 +130,24 @@ export default function ViewScores() {
   }
 
   useEffect(() => {
+    console.log('fetching database data')
     fetch('http://localhost:3001/tests')
       .then((response) => {
         return response.json();
+      })
+      .then(data => {
+        data = data.sort((a, b) => {
+          let lnameA = a.last_name.toUpperCase(); // ignore upper and lowercase
+          let lnameB = b.last_name.toUpperCase(); 
+          let fnameA = a.first_name.toUpperCase(); 
+          let fnameB = b.first_name.toUpperCase(); 
+          if (lnameA < lnameB) {return -1;}
+          else if (lnameA > lnameB) {return 1;}
+          else if (fnameA < fnameB) {return -1;}
+          else if (fnameA > fnameB) {return 1;}
+          else return 0;
+        });
+        return data;
       })
       .then(setTestData)
       .catch(err => {
@@ -140,40 +155,80 @@ export default function ViewScores() {
       });//fetch
   }, [updatedFlag]);//useEffect initial API call
 
-  function getSitupsScore() {
+  function getRunScore(runtime) {
+    let maxPoints = 60
+    let maxRun = 9.12
+    let tmp = runtime.split(':');
+    let runMin = tmp[0];
+    let runSec = tmp[1];
+    let forRunTime = [runMin.toString(), runSec.toString()].join(':')
+    let runNum = parseFloat([runMin, runSec].join('.'))
+    if (runNum < maxRun) {
+      return 60
+    } else {
+      return (Math.round(((maxRun / runNum) * maxPoints) * 100) / 100)
+    }
+  }
+
+  function getSitupsScore(situps) {
     let maxSitups = 58
     let maxScore = 20
     
     if (situps >= maxSitups) {
       return maxScore
     } else {
-      return (situps/ maxSitups) * maxScore
+      return parseFloat(((situps/ maxSitups) * maxScore).toFixed(1));
     }
   }
 
-  function getPushupsScore() {
+  function getPushupsScore(pushups) {
     let maxPushups = 67
     let maxScore = 20
-    
+    console.log('getPushupsScore', pushups);
     if (pushups >= maxPushups) {
       return maxScore
     } else {
-      return (pushups/ maxPushups) * maxScore
+      return parseFloat(((pushups/ maxPushups) * maxScore).toFixed(1));
     }
   }
 
   function onUpdate() {
-    let pushupScore = getPushupsScore()
-    let situpsScore= getSitupsScore()
+
     console.log('onUpdate tmpRowValue', tmpRowValues);
+    // let updatedData = {...tmpRowValues, test_id: clickedId, push_ups_score: pushupScore, sit_ups_score: situpsScore};
+    // console.log('onUpdate() updatedData: ', updatedData);
+    fetch('http://localhost:3001/tests', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(tmpRowValues) // body data type must match "Content-Type" header
+    })   
+    // .then(setTmpRowValues({}))
+    .then(() => setUpdatedFlag(!updatedFlag))//fetch chain      
+    .catch(err => {
+      console.error(err);
+    })
+
 
   }
 
-  function captureUserInputs(inputs, id) {
-    let tmp = testData.filter(test => test.test_id === id)[0];
-    ({...tmp} = inputs);
-    setTmpRowValues(inputs);
-    console.log('captureUserInputs tmp: ', tmp);
+  function captureUserInputs(inputs) {
+    // console.log('captureUserInputs', inputs);
+    // console.log('tmprowValues before setTmpRowValues', tmpRowValues);
+    let scores = {push_ups_score: getPushupsScore(tmpRowValues.push_ups), sit_ups_score: getSitupsScore(tmpRowValues.sit_ups), run_time_score: getRunScore(tmpRowValues.run_time.slice(0,5))}
+    // console.log('scores before total', scores);
+    let sumValues = Object.values(scores).reduce((a, b) => a + b);
+    // console.log('sumValues', sumValues);
+    scores = {...scores, total_score: sumValues.toFixed(1)};
+    // console.log('scores with total score', scores);
+    let tmp = {test_id: clickedId, ...tmpRowValues, ...inputs, ...scores};
+    // console.log('setTmpRowValues inputs', tmp);
+    //setTmpRowValues({...tmpRowValues, ...inputs, push_ups_score: getPushupsScore(tmpRowValues.push_ups), sit_ups_score: getSitupsScore(tmpRowValues.sit_ups)});
+    setTmpRowValues({...tmp});
+    console.log('captureUserInputs tmpRowValues: ', tmpRowValues);
+    // console.log('getUpshupsScore', getPushupsScore(tmpRowValues.push_ups));
   }
 
   return (
@@ -215,8 +270,11 @@ export default function ViewScores() {
               <>
                <TableCell component="th" scope="row">
                 <Button onClick={() => {
-                  setClickedId(testData.test_id)
-                  setUpdateField(!updateField)}}>Update</Button>
+                  setClickedId(testData.test_id);
+                  setUpdateField(true);
+                  setTmpRowValues(testData);
+                  console.log('onClick update called');
+                }}>Update</Button>
               </TableCell>
               <TableCell component="th" scope="row">
                 {testData.first_name}
@@ -259,49 +317,78 @@ export default function ViewScores() {
               <>
                 <TableCell component="th" scope="row">
                 <Button onClick={() => {
-                  setClickedId(testData.test_id)
-                  setUpdateField(!updateField)}}>Cancel</Button>
-                  <Button onClick={() => onUpdate()}>Submit</Button>
+                  setClickedId(testData.test_id);
+                  setUpdateField(!updateField);
+                  setTmpRowValues(testData);
+                  }}>Cancel
+                </Button>
+                  <Button onClick={() => {
+                    onUpdate();
+                    setUpdateField(!updateField);
+                  }}>Submit</Button>
               </TableCell>
               <TableCell component="th" scope="row">
-                <TextField id="standard-basic" label="First Name" defaultValue={testData.first_name}/>
-              </TableCell>
-              <TableCell component="th" scope="row">
-              <TextField id="standard-basic" label="Last Name" defaultValue={testData.last_name}/>
-              </TableCell>
-              <TableCell component="th" scope="row">
-              <TextField id="standard-basic" label="Age" defaultValue={testData.age}/>
-              </TableCell>
-              <TableCell component="th" scope="row">
-              <TextField id="standard-basic" label="Gender" defaultValue={testData.gender}/>
-              </TableCell>
-              <TableCell component="th" scope="row">
-              <TextField id="standard-basic" type="number" label="Push Ups" defaultValue={testData.push_ups} onChange={(event) => {
-                setPushups(event.target.value)
-                captureUserInputs({push_ups: event.target.value}, testData.test_id)
+                <TextField label="First Name" defaultValue={tmpRowValues.first_name} onChange={(event) => {
+                captureUserInputs({first_name: event.target.value})
               }
             }/>
               </TableCell>
               <TableCell component="th" scope="row">
-              {testData.push_ups_score}
+              <TextField  label="Last Name" defaultValue={tmpRowValues.last_name} onChange={(event) => {
+                captureUserInputs({last_name: event.target.value})
+              }
+            }/>
               </TableCell>
               <TableCell component="th" scope="row">
-              <TextField id="standard-basic" label="Run Time" defaultValue={testData.run_time} onChange={(event) => setRunTime(event.target.value)}/>
+              <TextField  type='number' min = '16' label="Age" defaultValue={tmpRowValues.age} onChange={(event) => {
+                captureUserInputs({age: event.target.value})
+              }
+            }/>
               </TableCell>
               <TableCell component="th" scope="row">
-                    {testData.run_time_score}
+              <TextField  label="Gender" defaultValue={tmpRowValues.gender} onChange={(event) => {
+                captureUserInputs({gender: event.target.value})
+              }
+            }/>
               </TableCell>
               <TableCell component="th" scope="row">
-              <TextField id="standard-basic" type="number" label="Sit Ups" defaultValue={testData.sit_ups} onChange={(event) => setSitups(event.target.value)}/>
+              <TextField  type="number" min= "0" label="Push Ups" defaultValue={tmpRowValues.push_ups} onChange={(event) => {
+                // setPushups(event.target.value)
+                captureUserInputs({push_ups: event.target.value})
+              }
+            }/>
+              </TableCell>
+              <TableCell component="th" scope="row" type='number' min='0' step='0.1'>
+              {tmpRowValues.push_ups_score}
               </TableCell>
               <TableCell component="th" scope="row">
-                    {testData.sit_ups_score}
+              <TextField  label="Run Time" defaultValue={tmpRowValues.run_time.slice(0,5)} onChange={(event) => {
+                captureUserInputs({run_time: event.target.value})
+                // setRunTime(event.target.value)
+              }}
+                />
               </TableCell>
               <TableCell component="th" scope="row">
-              <TextField id="standard-basic" type="date" label="Test Date" defaultValue={testData.test_date.slice(0,10)}/>
+                    {tmpRowValues.run_time_score}
               </TableCell>
               <TableCell component="th" scope="row">
-                    {testData.total_score}
+          <TextField  type="number" min='0' label="Sit Ups" defaultValue={tmpRowValues.sit_ups} onChange={(event) => {
+            captureUserInputs({sit_ups: event.target.value})
+            // setSitups(event.target.value)
+          }}
+            />
+              </TableCell>
+              <TableCell component="th" scope="row">
+                    {tmpRowValues.sit_ups_score}
+              </TableCell>
+              <TableCell component="th" scope="row">
+              <TextField  type="date" label="Test Date" defaultValue={tmpRowValues.test_date.slice(0,10)} onChange= {e => {
+                 captureUserInputs({test_date: e.target.value})
+
+              }}/>
+              </TableCell>
+              <TableCell component="th" scope="row">
+                    {tmpRowValues.total_score}
               </TableCell>
               </>
               }

@@ -30,7 +30,26 @@
       {"pushUps": ">67", "Points": "20.0"}
     ],
     "muscular-SU": [
-      {"sitUps": ">58", "Points": "20.0"}
+      {"sitUps": ">58", "Points": "20.0"},
+      {"sitUps": "57", "Points": "19.7"},
+      {"sitUps": "56", "Points": "19.4"},
+      {"sitUps": "55", "Points": "19.0"},
+      {"sitUps": "54", "Points": "18.8"},
+      {"sitUps": "53", "Points": "18.4"},
+      {"sitUps": "52", "Points": "18.0"},
+      {"sitUps": "51", "Points": "17.6"},
+      {"sitUps": "50", "Points": "17.4"},
+      {"sitUps": "49", "Points": "17.0"},
+      {"sitUps": "48", "Points": "16.6"},
+      {"sitUps": "47", "Points": "16.0"},
+      {"sitUps": "46", "Points": "15.0"},
+      {"sitUps": "45", "Points": "14.0"},
+      {"sitUps": "44", "Points": "13.0"},
+      {"sitUps": "43", "Points": "12.6"},
+      {"sitUps": "42", "Points": "12.0"},
+      {"sitUps": "41", "Points": "9.0"},
+      {"sitUps": "40", "Points": "6.0"},
+      {"sitUps": "39", "Points": "3.0"}
     ]
   },
   {
